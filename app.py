@@ -5,6 +5,36 @@ import zipfile
 import time
 import random
 from dotenv import load_dotenv
+import qrcode
+from io import BytesIO
+import base64
+
+@app.route('/qr')
+def generate_qr():
+    # Generer QR-kode
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data('https://helen.cloud/mp3.html')
+    qr.make(fit=True)
+    
+    # Lag bilde
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    # Konverter til base64 for visning
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    
+    return f'''
+    <h1>QR-kode for helen.cloud/mp3.html</h1>
+    <img src="data:image/png;base64,{img_str}" alt="QR Code">
+    <p>Skann for å gå til helen.cloud/mp3.html</p>
+    <a href="/mp3">Tilbake til app</a>
+    '''
 
 # Last inn environment variabler
 load_dotenv()
