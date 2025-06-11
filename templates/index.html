@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyAll MP3 Nedlaster</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        textarea { width: 100%; height: 200px; margin: 10px 0; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .status { margin: 20px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; }
+        .file-list { margin: 20px 0; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>🎵 EasyAll MP3 Nedlaster</h1>
+
+    <div class="warning">
+        <strong>⚠️ Viktig informasjon:</strong><br>
+        • YouTube har innført bot-beskyttelse som kan blokkere nedlastinger<br>
+        • Tjenesten prøver alternative kilder hvis YouTube feiler<br>
+        • Vennligst vent mellom forespørsler for å unngå blokkering<br>
+        • Kun til personlig bruk - respekter opphavsrett
+    </div>
+
+    <form method="post">
+        <label for="songs"><strong>Skriv inn sangtitler (en per linje):</strong></label><br>
+        <textarea name="songs" id="songs" placeholder="Eksempel:&#10;Adele - Hello&#10;Ed Sheeran - Shape of You&#10;The Weeknd - Blinding Lights"></textarea><br>
+        <button type="submit">📥 Last ned sanger</button>
+        <a href="/clear"><button type="button">🗑️ Tøm nedlastinger</button></a>
+    </form>
+
+    {% if status %}
+    <div class="status">
+        <h3>Status:</h3>
+        {{ status|safe }}
+    </div>
+    {% endif %}
+
+    {% if files %}
+    <div class="file-list">
+        <h3>📁 Nedlastede filer:</h3>
+        <a href="/download_zip"><button>📦 Last ned alle som ZIP</button></a><br><br>
+        {% for file in files %}
+            <a href="/downloads/{{ file }}" download>📄 {{ file }}</a><br>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <footer style="margin-top: 50px; text-align: center; color: #666;">
+        <p>Laget for personlig bruk. Respekter opphavsrett og artister.</p>
+    </footer>
+</body>
+</html>
