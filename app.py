@@ -9,6 +9,22 @@ import qrcode
 from io import BytesIO
 import base64
 
+# Last inn environment variabler FØRST
+load_dotenv()
+
+# Opprett Flask-appen TIDLIG
+app = Flask(__name__)
+
+# Sett SECRET_KEY fra environment variabel
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+# Hvis SECRET_KEY ikke finnes, generer en midlertidig en
+if not app.config['SECRET_KEY']:
+    import secrets
+    app.config['SECRET_KEY'] = secrets.token_hex(32)
+    print("⚠️  WARNING: Using temporary SECRET_KEY. Set SECRET_KEY in .env file!")
+
+# NÅ kan du definere rutene
 @app.route('/qr')
 def generate_qr():
     # Generer QR-kode
@@ -36,23 +52,10 @@ def generate_qr():
     <a href="/mp3">Tilbake til app</a>
     '''
 
-# Last inn environment variabler
-load_dotenv()
-
-app = Flask(__name__)
-
-# Sett SECRET_KEY fra environment variabel
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-
-# Hvis SECRET_KEY ikke finnes, generer en midlertidig en
-if not app.config['SECRET_KEY']:
-    import secrets
-    app.config['SECRET_KEY'] = secrets.token_hex(32)
-    print("⚠️  WARNING: Using temporary SECRET_KEY. Set SECRET_KEY in .env file!")
-
 ZIP_NAME = "alle_sanger.zip"
 DOWNLOAD_FOLDER = os.path.join(os.getcwd(), "downloads")
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
+
 
 # Force HTTPS in production
 @app.before_request
@@ -60,6 +63,7 @@ def force_https():
     if not request.is_secure and request.headers.get('X-Forwarded-Proto') != 'https':
         if 'localhost' not in request.host and '127.0.0.1' not in request.host:
             return redirect(request.url.replace('http://', 'https://'))
+
 
 def get_ydl_opts(safe_title):
     return {
