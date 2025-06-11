@@ -27,30 +27,42 @@ if not app.config['SECRET_KEY']:
 # NÅ kan du definere rutene
 @app.route('/qr')
 def generate_qr():
-    # Generer QR-kode
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=10,
-        border=4,
-    )
-    qr.add_data('https://helen.cloud/mp3.html')
-    qr.make(fit=True)
-    
-    # Lag bilde
-    img = qr.make_image(fill_color="black", back_color="white")
-    
-    # Konverter til base64 for visning
-    buffered = BytesIO()
-    img.save(buffered, format="PNG")
-    img_str = base64.b64encode(buffered.getvalue()).decode()
-    
-    return f'''
-    <h1>QR-kode for helen.cloud/mp3.html</h1>
-    <img src="data:image/png;base64,{img_str}" alt="QR Code">
-    <p>Skann for å gå til helen.cloud/mp3.html</p>
-    <a href="/mp3">Tilbake til app</a>
-    '''
+    try:
+        # Generer QR-kode
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data('https://helen.cloud/mp3.html')
+        qr.make(fit=True)
+        
+        # Lag bilde
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        # Konverter til base64 for visning
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+        
+        return f'''
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>QR-kode</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+        </head>
+        <body style="text-align: center; font-family: Arial, sans-serif; padding: 20px;">
+            <h1>QR-kode for helen.cloud/mp3.html</h1>
+            <img src="data:image/png;base64,{img_str}" alt="QR Code" style="max-width: 300px;">
+            <p>Skann for å gå til helen.cloud/mp3.html</p>
+            <a href="/mp3" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Tilbake til app</a>
+        </body>
+        </html>
+        '''
+    except Exception as e:
+        return f"Feil ved generering av QR-kode: {str(e)}", 500
 
 ZIP_NAME = "alle_sanger.zip"
 DOWNLOAD_FOLDER = os.path.join(os.getcwd(), "downloads")
